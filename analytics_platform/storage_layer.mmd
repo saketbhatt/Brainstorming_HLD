@@ -1,0 +1,16 @@
+%%{init: { 'theme': 'default', 'themeVariables': {
+    'fontSize': '26px',
+    'nodeSpacing': 140,
+    'rankSpacing': 160
+}}}%%
+
+flowchart LR
+    subgraph Storage
+        CASS[Cassandra - Hot Raw Event Store, 7 to 30 days]
+        S3[S3 Data Lake - Long-term History for ML]
+        RT[Real-time Store - Druid or ClickHouse]
+    end
+
+    SP[Spark/Flink Jobs] -->|Aggregates| RT
+    SP -->|Recent Raw Events| CASS
+    SP -->|Parquet Files| S3
