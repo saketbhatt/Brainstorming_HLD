@@ -1,0 +1,3 @@
+flowchart LR
+    A["Query Service"] -->|"Get counts"| B["Redis - hashtag_count"]
+    A -->|"Fetch hashtag posts"| C["DynamoDB - hashtag_store"]
