@@ -1,0 +1,18 @@
+%%{init: { 'theme': 'default', 'themeVariables': {
+    'fontSize': '26px',
+    'nodeSpacing': 140,
+    'rankSpacing': 160
+}}}%%
+
+flowchart LR
+    subgraph Clients
+        A[Client Apps - Web, Mobile, Services]
+    end
+
+    subgraph Ingestion
+        LB[Load Balancer]
+        K[Kafka Cluster - Multi-tenant Topics]
+    end
+
+    A -->|HTTPS or gRPC| LB
+    LB -->|Events Stream| K
