@@ -1,0 +1,3 @@
+flowchart LR
+    A["User Post Service"] -->|"Extract hashtags"| B["Hashtag Extraction Service"]
+    B -->|"Produce event - tag"| C["Kafka - hashtag_events"]
