@@ -1,0 +1,17 @@
+flowchart TB
+    subgraph Ingestion Layer
+        A["User Post Service"] -->|"Extract hashtags"| B["Hashtag Extraction Service"]
+        B -->|"Produce event - tag"| C["Kafka - hashtag_events"]
+    end
+
+    subgraph Processing Layer
+        C -->|"Consume stream"| D["Spark Streaming Consumer"]
+        D -->|"Update counts"| E["Redis - hashtag_count"]
+        D -->|"Store raw hashtags"| F["DynamoDB - hashtag_store"]
+        D -->|"Archive to S3"| G["S3 - hashtag_archive"]
+    end
+
+    subgraph Query Layer
+        H["Query Service"] -->|"Get counts"| E
+        H -->|"Fetch hashtag posts"| F
+    end
