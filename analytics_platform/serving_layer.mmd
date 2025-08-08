@@ -1,0 +1,15 @@
+%%{init: { 'theme': 'default', 'themeVariables': {
+    'fontSize': '26px',
+    'nodeSpacing': 140,
+    'rankSpacing': 160
+}}}%%
+
+flowchart LR
+    subgraph Serving
+        API[API Gateway and Access Control]
+        DB[Client Dashboards - Superset or Custom UI]
+    end
+
+    RT[Real-time Store] -->|Low-latency Query| API
+    CASS[Cassandra] -->|Recent Data Query| API
+    API --> DB
