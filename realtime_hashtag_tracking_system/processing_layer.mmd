@@ -1,0 +1,5 @@
+flowchart LR
+    A["Kafka - hashtag_events"] -->|"Consume stream"| B["Spark Streaming Consumer"]
+    B -->|"Update counts"| C["Redis - hashtag_count"]
+    B -->|"Store raw hashtags"| D["DynamoDB - hashtag_store"]
+    B -->|"Archive to S3"| E["S3 - hashtag_archive"]
