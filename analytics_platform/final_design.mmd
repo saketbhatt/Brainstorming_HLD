@@ -1,0 +1,57 @@
+%%{init: { 'theme': 'default', 'themeVariables': {
+    'fontSize': '24px',
+    'nodeSpacing': 150,
+    'rankSpacing': 180
+}}}%%
+
+flowchart LR
+    subgraph Clients
+        A[Client Apps - Web, Mobile, Services]
+    end
+
+    subgraph Ingestion
+        LB[Load Balancer]
+        K[Kafka Cluster - Multi-tenant Topics]
+    end
+
+    subgraph Processing
+        SR[Schema Registry and Validation]
+        SP[Spark Structured Streaming or Flink Jobs]
+    end
+
+    subgraph Storage
+        CASS[Cassandra - Hot Raw Event Store, 7 to 30 days]
+        S3[S3 Data Lake - Long-term History for ML]
+        RT[Real-time Store - Druid or ClickHouse]
+    end
+
+    subgraph Serving
+        API[API Gateway and Access Control]
+        DB[Client Dashboards - Superset or Custom UI]
+    end
+
+    subgraph ML
+        MLProc[ML Training Pipeline - Spark ML or TensorFlow]
+        MLPredict[ML Models and Predictions API]
+    end
+
+    %% Connections
+    A -->|HTTPS or gRPC| LB
+    LB -->|Events Stream| K
+    K -->|Metadata Enrichment| SR
+    SR --> SP
+
+    %% Storage outputs
+    SP -->|Aggregates| RT
+    SP -->|Recent Raw Events| CASS
+    SP -->|Parquet Files| S3
+
+    %% Serving
+    RT -->|Low-latency Query| API
+    CASS -->|Recent Data Query| API
+    API --> DB
+
+    %% ML Flow
+    S3 --> MLProc
+    MLProc --> MLPredict
+    MLPredict --> API
