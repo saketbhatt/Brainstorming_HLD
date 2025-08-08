@@ -1,0 +1,15 @@
+%%{init: { 'theme': 'default', 'themeVariables': {
+    'fontSize': '26px',
+    'nodeSpacing': 140,
+    'rankSpacing': 160
+}}}%%
+
+flowchart LR
+    subgraph ML
+        MLProc[ML Training Pipeline - Spark ML or TensorFlow]
+        MLPredict[ML Models and Predictions API]
+    end
+
+    S3[S3 Data Lake] --> MLProc
+    MLProc --> MLPredict
+    MLPredict --> API[API Gateway]
