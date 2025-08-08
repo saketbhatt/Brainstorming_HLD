@@ -1,0 +1,14 @@
+%%{init: { 'theme': 'default', 'themeVariables': {
+    'fontSize': '26px',
+    'nodeSpacing': 140,
+    'rankSpacing': 160
+}}}%%
+
+flowchart LR
+    subgraph Processing
+        SR[Schema Registry and Validation]
+        SP[Spark Structured Streaming or Flink Jobs]
+    end
+
+    K[Kafka Cluster] -->|Metadata Enrichment| SR
+    SR --> SP
