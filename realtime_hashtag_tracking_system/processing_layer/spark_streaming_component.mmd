@@ -1,0 +1,27 @@
+flowchart TB
+    subgraph MasterNode["Driver (Master Node)"]
+        Code["Streaming App Code (Transformations + Sink)"]
+        Planner["Logical & Physical Plan (Query Plan)"]
+        Scheduler["Task Scheduler"]
+    end
+
+    subgraph WorkerNodes["Executors (Worker Nodes)"]
+        E1["Executor 1 (Partition Tasks)"]
+        E2["Executor 2 (Partition Tasks)"]
+        E3["Executor 3 (Partition Tasks)"]
+    end
+
+    Kafka["Kafka Partitions"]
+    Sink["Sink (DB / Storage) (JDBC, Redis, S3, etc.)"]
+
+    Kafka --> E1
+    Kafka --> E2
+    Kafka --> E3
+
+    Code --> Planner --> Scheduler --> E1
+    Scheduler --> E2
+    Scheduler --> E3
+
+    E1 -->|"Final stage = write"| Sink
+    E2 -->|"Final stage = write"| Sink
+    E3 -->|"Final stage = write"| Sink
