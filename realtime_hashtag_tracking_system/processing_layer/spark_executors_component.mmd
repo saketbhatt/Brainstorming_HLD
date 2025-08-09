@@ -1,0 +1,50 @@
+flowchart LR
+    %% Kafka Cluster
+    subgraph Kafka[Kafka Cluster]
+        B1[Broker 1]:::broker
+        B2[Broker 2]:::broker
+        B3[Broker 3]:::broker
+    end
+
+    %% Spark Streaming Cluster
+    subgraph Spark[Spark Streaming Cluster]
+        D[Driver: Coordinates Jobs]:::driver
+        E1[Executor 1: Consumes Kafka Partitions]:::executor
+        E2[Executor 2: Consumes Kafka Partitions]:::executor
+        E3[Executor N: Consumes Kafka Partitions]:::executor
+    end
+
+    %% Processing Pipelines
+    subgraph Pipelines[Streaming Query / Transformation Pipelines]
+        P1[Pipeline Stage 1: Parse & Deserialize]
+        P2[Pipeline Stage 2: Transform & Enrich]
+        P3[Pipeline Stage 3: Aggregate / Join]
+        P4[Pipeline Stage 4: Prepare for Storage]
+    end
+
+    %% Storage / Sinks
+    subgraph Storage[Databases / Sinks]
+        R[Redis]
+        DDB[DynamoDB]
+        S3[S3 Bucket]
+    end
+
+    %% Query Flow
+    B1 -->|Partitions| E1
+    B2 -->|Partitions| E2
+    B3 -->|Partitions| E3
+
+    E1 --> P1
+    E2 --> P1
+    E3 --> P1
+
+    P1 --> P2 --> P3 --> P4
+
+    P4 --> R
+    P4 --> DDB
+    P4 --> S3
+
+    %% Styling
+    classDef broker fill:#ffddcc,stroke:#333,stroke-width:1px;
+    classDef driver fill:#d1eaff,stroke:#333,stroke-width:1px;
+    classDef executor fill:#c4f0c4,stroke:#333,stroke-width:1px;
