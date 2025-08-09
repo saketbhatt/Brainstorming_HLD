@@ -1,0 +1,37 @@
+flowchart LR
+    subgraph P["Producers Layer"]
+        P1["Hashtag Extraction Service Pod #1"]
+        P2["Hashtag Extraction Service Pod #2"]
+        P3["Hashtag Extraction Service Pod #N"]
+    end
+
+    subgraph K["Kafka Cluster"]
+        subgraph KB1["Broker 1"]
+            K1P1["Partition 1"]
+            K1P2["Partition 2"]
+        end
+        subgraph KB2["Broker 2"]
+            K2P3["Partition 3"]
+            K2P4["Partition 4"]
+        end
+        subgraph KB3["Broker 3"]
+            K3P5["Partition 5"]
+            K3P6["Partition 6"]
+        end
+    end
+
+    subgraph Z["Cluster Coordination"]
+        ZK["Zookeeper / KRaft Controller"]
+        SR["Schema Registry"]
+    end
+
+    P1 -->|Produce keyed events| K
+    P2 -->|Produce keyed events| K
+    P3 -->|Produce keyed events| K
+
+    K <--> ZK
+    ZK --> SR
+
+    style P fill:#D5E8D4,stroke:#82B366
+    style K fill:#FFF2CC,stroke:#D6B656
+    style Z fill:#E1D5E7,stroke:#9673A6
