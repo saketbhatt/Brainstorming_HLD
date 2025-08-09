@@ -1,0 +1,35 @@
+flowchart LR
+    subgraph KafkaCluster[Kafka Cluster]
+        K1[Broker 1]:::broker
+        K2[Broker 2]:::broker
+        K3[Broker 3]:::broker
+    end
+
+    subgraph SparkCluster[Spark Streaming Cluster]
+        Driver(Spark Driver):::driver
+        E1(Spark Executor 1):::executor
+        E2(Spark Executor 2):::executor
+        E3(Spark Executor N):::executor
+
+        Driver --> E1
+        Driver --> E2
+        Driver --> E3
+    end
+
+    subgraph Storage[Databases / Sinks]
+        R[Redis]
+        D[DynamoDB]
+        S3[S3 Bucket]
+    end
+
+    K1 -->|Consume Partitions| Driver
+    K2 -->|Consume Partitions| Driver
+    K3 -->|Consume Partitions| Driver
+
+    E1 -->|Write Results| R
+    E2 -->|Write Results| D
+    E3 -->|Write Results| S3
+
+    classDef broker fill:#ffddcc,stroke:#333,stroke-width:1px;
+    classDef driver fill:#d1eaff,stroke:#333,stroke-width:1px;
+    classDef executor fill:#c4f0c4,stroke:#333,stroke-width:1px;
