@@ -1,0 +1,34 @@
+flowchart LR
+    %% ===== Clients =====
+    U["User / Client App"] 
+
+    %% ===== Write Flow =====
+    U -->|HTTP POST with hashtags| API["Write API Service"]
+    API -->|Produce Event| KAFKA[Kafka Cluster]
+    KAFKA -->|Partitioned Events| SPARK_DRIVER["Spark Driver (Coordinator)"]
+    SPARK_DRIVER -->|Distribute Tasks| EXEC1["Spark Executor 1"]
+    SPARK_DRIVER -->|Distribute Tasks| EXEC2["Spark Executor 2"]
+    SPARK_DRIVER -->|Distribute Tasks| EXEC3["Spark Executor 3"]
+
+    EXEC1 -->|Process Partition Data| REDIS["Redis (Hot Data Cache)"]
+    EXEC1 -->|Store Metadata| DYNAMO["DynamoDB (Metadata Store)"]
+    EXEC1 -->|Store Raw Data| S3["S3 (Raw Storage)"]
+
+    EXEC2 -->|Process Partition Data| REDIS
+    EXEC2 -->|Store Metadata| DYNAMO
+    EXEC2 -->|Store Raw Data| S3
+
+    EXEC3 -->|Process Partition Data| REDIS
+    EXEC3 -->|Store Metadata| DYNAMO
+    EXEC3 -->|Store Raw Data| S3
+
+    %% ===== Read Flow =====
+    U -->|HTTP GET Query| QUERY_SERVICE["Query API Service"]
+    QUERY_SERVICE -->|Check Cache| REDIS
+    REDIS -->|Cache Hit| QUERY_SERVICE
+    QUERY_SERVICE -->|Cache Miss → DynamoDB| DYNAMO
+    QUERY_SERVICE -->|Cache Miss → S3| S3
+    DYNAMO --> QUERY_SERVICE
+    S3 --> QUERY_SERVICE
+
+    QUERY_SERVICE -->|Return Response| U
