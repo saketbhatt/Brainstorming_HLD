@@ -6,7 +6,7 @@ flowchart LR
     end
 
     subgraph SparkCluster[Spark Streaming Cluster]
-        Driver(Spark Driver):::driver
+        Driver(Spark Driver - Coordination Only):::driver
         E1(Spark Executor 1):::executor
         E2(Spark Executor 2):::executor
         E3(Spark Executor N):::executor
@@ -22,9 +22,9 @@ flowchart LR
         S3[S3 Bucket]
     end
 
-    K1 -->|Consume Partitions| Driver
-    K2 -->|Consume Partitions| Driver
-    K3 -->|Consume Partitions| Driver
+    K1 -->|Consume Partitions| E1
+    K2 -->|Consume Partitions| E2
+    K3 -->|Consume Partitions| E3
 
     E1 -->|Write Results| R
     E2 -->|Write Results| D
