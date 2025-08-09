@@ -1,0 +1,62 @@
+flowchart TB
+    %% Client Layer
+    subgraph Client[Client Layer]
+        UI["Frontend UI"]
+    end
+
+    %% API Layer
+    subgraph APILayer[API Layer]
+        API["API Gateway / Load Balancer"]
+    end
+
+    %% Query Service Layer
+    subgraph QSL[Query Service Layer]
+        Router["Request Router"]
+        Auth["Auth & Access Control"]
+        Parser["Query Parser & Validator"]
+        Planner["Query Planner"]
+        Executor["Execution Engine"]
+    end
+
+    %% Cache Layer
+    subgraph Cache[Cache Layer]
+        CACHE["Redis - Hot Data Cache"]
+    end
+
+    %% Persistent Storage Layer
+    subgraph Storage[Persistent Storage]
+        DB1["DynamoDB - Structured Data"]
+        S3["S3 Data Lake - Large Files / Batch Data"]
+    end
+
+    %% Data Flow
+    UI --> API
+    API --> Router
+    Router --> Auth
+    Auth --> Parser
+    Parser --> Planner
+    Planner --> Executor
+
+    Executor --> CACHE
+    CACHE --> Executor
+
+    Executor -->|Cache Miss / Needs Fresh Data| DB1
+    Executor -->|Cache Miss / Large Dataset| S3
+
+    %% Return path
+    Executor --> Router
+    Router --> API
+    API --> UI
+
+    %% Styles
+    classDef client fill:#ffddcc,stroke:#333,stroke-width:1px;
+    classDef api fill:#f7e9ff,stroke:#333,stroke-width:1px;
+    classDef qs fill:#d1eaff,stroke:#333,stroke-width:1px;
+    classDef cache fill:#fff3b0,stroke:#333,stroke-width:1px;
+    classDef db fill:#c4f0c4,stroke:#333,stroke-width:1px;
+
+    class UI client;
+    class API api;
+    class Router,Auth,Parser,Planner,Executor qs;
+    class CACHE cache;
+    class DB1,S3 db;
