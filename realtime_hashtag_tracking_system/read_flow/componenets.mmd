@@ -1,0 +1,36 @@
+flowchart LR
+    subgraph Client[Client Application]
+        UI[Frontend UI]
+    end
+
+    subgraph QueryService[Query Service Layer]
+        API[API Gateway]
+        QS[Query Service]
+    end
+
+    subgraph Cache[In-Memory Cache]
+        CACHE[Redis]
+    end
+
+    subgraph Databases[Persistent Storage Layer]
+        DB1[(DynamoDB)]
+        S3[(S3 Data Lake)]
+    end
+
+    UI --> API
+    API --> QS
+    QS --> CACHE
+    CACHE --> QS
+
+    QS -->|Cache Miss| DB1
+    QS -->|Cache Miss / Large File| S3
+
+    classDef client fill:#ffddcc,stroke:#333,stroke-width:1px;
+    classDef service fill:#d1eaff,stroke:#333,stroke-width:1px;
+    classDef cache fill:#fff3b0,stroke:#333,stroke-width:1px;
+    classDef db fill:#c4f0c4,stroke:#333,stroke-width:1px;
+
+    class UI client;
+    class API,QS service;
+    class CACHE cache;
+    class DB1,S3 db;
